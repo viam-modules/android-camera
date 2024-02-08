@@ -12,6 +12,7 @@
 - Follow instructions from rdk-apk to build rdk-server app and deploy to emulator/device.
     - Setup camera in emulator settings.
     - Enable camera permissions in the rdk-server app manually.
+    - Run `make root` to get root access to the emulator and remove selinux restrictions.
 - Run the following commands to build and push the android-camera module. (Make sure to replace hardcoded paths with your own paths.)
 
 ```bash
@@ -24,8 +25,7 @@ make push-binary
 ```json
     {
       "attributes": {
-        "rotate": 0,
-        "timestamp": true,
+        "rotate": 90,
         "width": 640,
         "height": 480,
         "index": 0

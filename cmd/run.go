@@ -32,8 +32,7 @@ func main() {
 		logger.Errorf("Failed to start module: %v", err)
 		return
 	}
-
 	defer myMod.Close(ctx)
+
 	<-ctx.Done()
-	return
 }
