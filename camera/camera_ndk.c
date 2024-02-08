@@ -47,8 +47,6 @@ ACameraCaptureSession_stateCallbacks captureSessionStateCallbacks = {
 };
 
 void image_callback(void *context, AImageReader *reader) {
-    LOGE("image_callback");
-
 	AImage* img = NULL;
     media_status_t status = AImageReader_acquireLatestImage(reader, &img);
     if(status != AMEDIA_OK) {
@@ -103,43 +101,36 @@ int openCamera(int index, int width, int height) {
     }
 
     selectedCameraId = cameraIdList->cameraIds[index];
-    LOGI("open camera (id: %s, num of cameras: %d).\n", selectedCameraId, cameraIdList->numCameras);
 
     status = ACameraManager_openCamera(cameraManager, selectedCameraId, &deviceStateCallbacks, &cameraDevice);
     if(status != ACAMERA_OK) {
 		LOGE("failed to open camera device (id: %s)\n", selectedCameraId);
 		return status;
     }
-    LOGI("camera device opened.\n");
 
     status = ACameraDevice_createCaptureRequest(cameraDevice, TEMPLATE_STILL_CAPTURE, &captureRequest);
     if(status != ACAMERA_OK) {
 		LOGE("failed to create snapshot capture request (id: %s)\n", selectedCameraId);
 		return status;
     }
-    LOGI("capture request created.\n");
 
     status = ACaptureSessionOutputContainer_create(&captureSessionOutputContainer);
     if(status != ACAMERA_OK) {
 		LOGE("failed to create session output container (id: %s)\n", selectedCameraId);
 		return status;
     }
-    LOGI("session output container created.\n");
 
     media_status_t mstatus = AImageReader_new(width, height, AIMAGE_FORMAT_YUV_420_888, 2, &imageReader);
     if(mstatus != AMEDIA_OK) {
 		LOGE("failed to create image reader (reason: %d).\n", mstatus);
 		return mstatus;
     }
-    LOGI("image reader created.\n");
 
     mstatus = AImageReader_setImageListener(imageReader, &imageListener);
     if(mstatus != AMEDIA_OK) {
 		LOGE("failed to set image listener (reason: %d).\n", mstatus);
 		return mstatus;
     }
-
-    LOGI("image listener set.\n");
 
 	AImageReader_getWindow(imageReader, &nativeWindow);
     ANativeWindow_acquire(nativeWindow);
@@ -155,11 +146,9 @@ int openCamera(int index, int width, int height) {
 		LOGE("failed to create capture session (reason: %d).\n", status);
 		return status;
     }
-    LOGI("capture session created.\n");
 
     ACameraManager_deleteCameraIdList(cameraIdList);
     ACameraManager_delete(cameraManager);
-    LOGI("camera manager deleted.\n");
 
     return ACAMERA_OK;
 }

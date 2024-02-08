@@ -33,6 +33,7 @@ type Config struct {
 	DistortionParams *transform.BrownConrady            `json:"distortion_parameters,omitempty"`
 }
 
+// Validate validates the configuration.
 func (conf *Config) Validate(path string) ([]string, error) {
 	if conf.Width <= 0 {
 		return nil, fmt.Errorf("width must be greater than 0")
@@ -67,10 +68,8 @@ type DroidCamera struct {
 	started bool
 }
 
+// NextImage returns the next image from the camera.
 func (c *DroidCamera) NextImage() (img image.Image, err error) {
-	c.logger.Infof("### camera: hit next image")
-
-	c.logger.Infof("### camera: camera is opened, capturing camera")
 	ret := C.captureCamera()
 	if bool(int(ret) != 0) {
 		c.logger.Infof("### camera: failed to capture camera")
@@ -120,7 +119,6 @@ func (c *DroidCamera) SetProperty(id int, value float64) {
 
 // Close closes camera.
 func (c *DroidCamera) Close(ctx context.Context) (err error) {
-	c.logger.Infof("### camera: hit close")
 	ret := C.closeCamera()
 	if bool(int(ret) != 0) {
 		err = fmt.Errorf("camera: can not close camera %d: error %d", c.opts.Index, int(ret))
@@ -130,6 +128,7 @@ func (c *DroidCamera) Close(ctx context.Context) (err error) {
 	return
 }
 
+// Register sets up the camera component.
 func Register() {
 	resource.RegisterComponent(
 		camera.API,
@@ -231,6 +230,7 @@ func rotateImage(img image.Image, rotate int) image.Image {
 	return rotated
 }
 
+// getTestImage returns a test image.
 func getTestImage() image.Image {
 	return image.NewRGBA(image.Rect(0, 0, 640, 480))
 }
