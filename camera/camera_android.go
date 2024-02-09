@@ -1,5 +1,5 @@
-//go:build localcgo
-// +build localcgo
+//go:build local_cgo
+// +build local_cgo
 
 // Package androidcamera.
 package androidcamera

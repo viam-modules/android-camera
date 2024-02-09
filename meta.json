@@ -1,0 +1,13 @@
+{
+  "module_id": "viam:droid-cam",
+  "visibility": "public",
+  "url": "https://github.com/viam-labs/android-camera",
+  "description": "Module for Android cameras",
+  "models": [
+    {
+      "api": "rdk:component:camera",
+      "model": "viam:android:droid-cam"
+    }
+  ],
+  "entrypoint": "./bin/droidcamera-android-aarch64"
+}

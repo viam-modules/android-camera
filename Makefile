@@ -20,6 +20,8 @@ ANDROID_API := 29
 MOBILE_OUTPUT_NAME := droidcam.aar
 MOBILE_OUTPUT := $(OUTPUT_DIR)/$(MOBILE_OUTPUT_NAME)
 
+MODULE_VERSION := 0.0.3
+
 # Build the arm64 module binary
 build-binary:
 	@echo "Building binary for Android..."
@@ -27,7 +29,7 @@ build-binary:
 		CGO_CFLAGS="$(CGO_CFLAGS)" \
 		CGO_LDFLAGS="$(CGO_LDFLAGS)" \
 		CC=$(CC) \
-		go build -v -tags localcgo,no_cgo \
+		go build -v -tags local_cgo,no_cgo \
 		-o $(OUTPUT) ./cmd
 	@echo "Build complete: $(OUTPUT)"
 
@@ -42,6 +44,12 @@ push-binary:
 	@echo "Pushing binary to device..."
 	@adb push $(OUTPUT) $(BINARY_PATH)
 	@echo "Binary pushed: $(BINARY_PATH)"
+
+# Push the module to viam registry
+push-module:
+	@echo "Pushing module to viam registry..."
+	@viam module upload --platform=android/arm64 --version=$(MODULE_VERSION) $(OUTPUT)
+	@echo "Module pushed: $(OUTPUT)"
 
 # Copy the binary to project assets
 push-asset:
