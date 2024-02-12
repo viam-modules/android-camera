@@ -1,15 +1,26 @@
-NDK_ROOT := $(HOME)/Library/Android/sdk/ndk/26.1.10909125
-APP_ROOT := $(HOME)/AndroidStudioProjects/DroidCamera
+UNAME=$(shell uname)
+ifeq ($(UNAME),Linux)
+	NDK_ROOT ?= $(HOME)/Android/Sdk/ndk/26.1.10909125
+	HOST_OS ?= linux
+	GOARCH := amd64
+	CC_ARCH ?= x86_64
+else
+	NDK_ROOT ?= $(HOME)/Library/Android/sdk/ndk/26.1.10909125
+	HOST_OS ?= darwin
+	GOARCH := arm64
+	CC_ARCH ?= aarch64
+endif
+
+APP_ROOT ?= $(HOME)/AndroidStudioProjects/DroidCamera
 
 GOOS := android
-GOARCH := arm64
 CGO_ENABLED := 1
-CC := $(shell realpath $(NDK_ROOT)/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android30-clang)
-CGO_CFLAGS := -I$(NDK_ROOT)/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include \
-              -I$(NDK_ROOT)/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/aarch64-linux-android
-CGO_LDFLAGS := -L$(NDK_ROOT)/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib
+CC := $(shell realpath $(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/bin/$(CC_ARCH)-linux-android30-clang)
+CGO_CFLAGS := -I$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/include \
+              -I$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/include/$(CC_ARCH)-linux-android
+CGO_LDFLAGS := -L$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/lib
 OUTPUT_DIR := bin
-OUTPUT_NAME := droidcamera-android-aarch64
+OUTPUT_NAME := droidcamera-android-$(CC_ARCH)
 OUTPUT := $(OUTPUT_DIR)/$(OUTPUT_NAME)
 
 ASSET_PATH := $(APP_ROOT)/app/src/main/assets/$(OUTPUT_NAME)
