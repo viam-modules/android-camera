@@ -2,7 +2,7 @@ module github.com/seanavery/viam-droid-cam
 
 go 1.21.5
 
-require go.viam.com/rdk v0.19.1
+require go.viam.com/rdk v0.20.1-0.20240209172210-8dc034cf4d2a
 
 require (
 	cloud.google.com/go v0.110.4 // indirect
@@ -146,5 +146,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 )
-
-replace go.viam.com/rdk => ../rdk-droid
