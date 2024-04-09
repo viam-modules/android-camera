@@ -2,12 +2,12 @@ UNAME=$(shell uname)
 ifeq ($(UNAME),Linux)
 	NDK_ROOT ?= $(HOME)/Android/Sdk/ndk/26.1.10909125
 	HOST_OS ?= linux
-	GOARCH := amd64
+	GOARCH ?= amd64
 	CC_ARCH ?= x86_64
 else
 	NDK_ROOT ?= $(HOME)/Library/Android/sdk/ndk/26.1.10909125
 	HOST_OS ?= darwin
-	GOARCH := arm64
+	GOARCH ?= arm64
 	CC_ARCH ?= aarch64
 endif
 
@@ -15,7 +15,8 @@ APP_ROOT ?= $(HOME)/AndroidStudioProjects/DroidCamera
 
 GOOS := android
 CGO_ENABLED := 1
-CC := $(shell realpath $(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/bin/$(CC_ARCH)-linux-android30-clang)
+DROID_TARGET ?= android30
+CC := $(shell realpath $(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/bin/$(CC_ARCH)-linux-$(DROID_TARGET)-clang)
 CGO_CFLAGS := -I$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/include \
               -I$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/include/$(CC_ARCH)-linux-android
 CGO_LDFLAGS := -L$(NDK_ROOT)/toolchains/llvm/prebuilt/$(HOST_OS)-x86_64/sysroot/usr/lib
