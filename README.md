@@ -46,3 +46,10 @@ make push-binary
     }
 ```
 
+### 32-bit arm builds
+
+For testing only, do not use in production:
+
+```sh
+GOARCH=arm CC_ARCH=armv7a DROID_TARGET=androideabi30 make build-binary
+```
