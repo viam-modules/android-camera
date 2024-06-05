@@ -121,7 +121,7 @@ int openCamera(int index, int width, int height) {
         return mstatus;
     }
 
-	  AImageReader_getWindow(imageReader, &nativeWindow);
+    AImageReader_getWindow(imageReader, &nativeWindow);
     ANativeWindow_acquire(nativeWindow);
 
     ACameraOutputTarget_create(nativeWindow, &cameraOutputTarget);
