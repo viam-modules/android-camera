@@ -21,9 +21,9 @@ void device_on_error(void *context, ACameraDevice *device, int error) {
 }
 
 ACameraDevice_stateCallbacks deviceStateCallbacks = {
-	.context = NULL,
-	.onDisconnected = device_on_disconnected,
-	.onError = device_on_error,
+    .context = NULL,
+    .onDisconnected = device_on_disconnected,
+    .onError = device_on_error,
 };
 
 void session_on_ready(void *context, ACameraCaptureSession *session) {
@@ -39,10 +39,10 @@ void session_on_closed(void *context, ACameraCaptureSession *session) {
 }
 
 ACameraCaptureSession_stateCallbacks captureSessionStateCallbacks = {
-        .context = NULL,
-        .onActive = session_on_active,
-        .onReady = session_on_ready,
-        .onClosed = session_on_closed,
+    .context = NULL,
+    .onActive = session_on_active,
+    .onReady = session_on_ready,
+    .onClosed = session_on_closed,
 };
 
 void image_callback(void *context, AImageReader *reader) {
@@ -62,8 +62,8 @@ void image_callback(void *context, AImageReader *reader) {
 }
 
 AImageReader_ImageListener imageListener = {
-	.context = NULL,
-	.onImageAvailable = image_callback,
+    .context = NULL,
+    .onImageAvailable = image_callback,
 };
 
 int openCamera(int index, int width, int height) {
@@ -143,7 +143,6 @@ int openCamera(int index, int width, int height) {
 }
 
 int captureCamera() {
-    LOGI("capture camera.\n");
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
     if(status != ACAMERA_OK) {
         LOGE("failed to capture image (reason: %d).\n", status);

@@ -101,15 +101,6 @@ func (c *DroidCamera) NextImage() (img image.Image, err error) {
 	return img, nil
 }
 
-// GetProperty returns the specified camera property.
-func (c *DroidCamera) GetProperty(id int) float64 {
-	return 0
-}
-
-// SetProperty sets a camera property.
-func (c *DroidCamera) SetProperty(id int, value float64) {
-}
-
 // Close closes camera.
 func (c *DroidCamera) Close(ctx context.Context) (err error) {
 	ret := C.closeCamera()
