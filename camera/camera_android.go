@@ -1,7 +1,7 @@
 // Package androidcamera.
 package androidcamera
 
-// #cgo android CFLAGS: -D__ANDROID_API__=24
+// #cgo android CFLAGS: -D__ANDROID_API__=29
 // #cgo android LDFLAGS: -lcamera2ndk -lmediandk -llog -landroid
 // #include "camera_ndk.h"
 import "C"
@@ -41,8 +41,8 @@ func (conf *Config) Validate(path string) ([]string, error) {
 	if conf.Index < 0 {
 		return nil, fmt.Errorf("index must be greater than or equal to 0")
 	}
-	if conf.Rotate < 0 {
-		return nil, fmt.Errorf("rotate must be greater than or equal to 0")
+	if conf.Rotate%90 != 0 {
+		return nil, fmt.Errorf("rotate must be a multiple of 90")
 	}
 	return nil, nil
 }
@@ -69,17 +69,15 @@ type DroidCamera struct {
 func (c *DroidCamera) NextImage() (img image.Image, err error) {
 	ret := C.captureCamera()
 	if bool(int(ret) != 0) {
-		c.logger.Infof("### camera: failed to capture camera")
 		err = fmt.Errorf("camera: can not grab frame: error %d", int(ret))
-		return
+		return nil, err
 	}
 
 	C.pthread_mutex_lock(&C.globalImage.mutex)
 	defer C.pthread_mutex_unlock(&C.globalImage.mutex)
 
 	if C.globalImage.image == nil {
-		c.logger.Infof("### camera: image is nil")
-		err = fmt.Errorf("camera: can not retrieve frame")
+		err = fmt.Errorf("camera: image is nil")
 		return nil, err
 	}
 
@@ -99,8 +97,7 @@ func (c *DroidCamera) NextImage() (img image.Image, err error) {
 	c.img.Cb = C.GoBytes(unsafe.Pointer(cbPtr), cbLen)
 	c.img.Cr = C.GoBytes(unsafe.Pointer(crPtr), crLen)
 
-	img = c.img
-	img = rotateImage(img, c.opts.Rotate)
+	img = rotateImage(c.img, c.opts.Rotate)
 
 	return img, nil
 }
