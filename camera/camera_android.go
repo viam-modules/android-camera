@@ -1,7 +1,6 @@
 // Package androidcamera.
 package androidcamera
 
-// #cgo android CFLAGS: -D__ANDROID_API__=29
 // #cgo android LDFLAGS: -lcamera2ndk -lmediandk -llog -landroid
 // #include "camera_ndk.h"
 import "C"

@@ -1,7 +1,6 @@
 #include "camera_ndk.h"
 
 GlobalImage globalImage = {NULL, PTHREAD_MUTEX_INITIALIZER};
-AImage *image = NULL;
 AImageReader *imageReader = NULL;
 ANativeWindow *nativeWindow = NULL;
 ACameraDevice *cameraDevice = NULL;
@@ -47,30 +46,20 @@ ACameraCaptureSession_stateCallbacks captureSessionStateCallbacks = {
 };
 
 void image_callback(void *context, AImageReader *reader) {
-	AImage* img = NULL;
+    AImage* img = NULL;
     media_status_t status = AImageReader_acquireLatestImage(reader, &img);
     if(status != AMEDIA_OK) {
-		LOGE("failed to acquire next image (reason: %d).\n", status);
-		return;
+        LOGE("failed to acquire next image (reason: %d).\n", status);
+        return;
     }
 
-	pthread_mutex_lock(&globalImage.mutex);
-	if (globalImage.image != NULL) {
-        AImage_delete(globalImage.image); // Free the old image
+    pthread_mutex_lock(&globalImage.mutex);
+    if (globalImage.image != NULL) {
+        AImage_delete(globalImage.image);
     }
-	globalImage.image = img; // Update to the new image
+    globalImage.image = img;
     pthread_mutex_unlock(&globalImage.mutex);
 }
-
-// uses AImage_delete to free image
-void freeImageBuff() {
-    LOGI("free image buffer.\n");
-    if(image != NULL) {
-        AImage_delete(image);
-        image = NULL;
-    }
-}
-
 
 AImageReader_ImageListener imageListener = {
 	.context = NULL,
@@ -88,63 +77,63 @@ int openCamera(int index, int width, int height) {
 
     status = ACameraManager_getCameraIdList(cameraManager, &cameraIdList);
     if(status != ACAMERA_OK) {
-		LOGE("failed to get camera id list (reason: %d).\n", status);
-		return status;
+        LOGE("failed to get camera id list (reason: %d).\n", status);
+        return status;
     }
 
     if(cameraIdList->numCameras < 1) {
-		LOGE("no camera device detected.\n");
+        LOGE("no camera device datected.\n");
     }
 
     if(cameraIdList->numCameras < index+1) {
-		LOGE("no camera at index %d.\n", index);
+		    LOGE("no camera at index %d.\n", index);
     }
 
     selectedCameraId = cameraIdList->cameraIds[index];
 
     status = ACameraManager_openCamera(cameraManager, selectedCameraId, &deviceStateCallbacks, &cameraDevice);
     if(status != ACAMERA_OK) {
-		LOGE("failed to open camera device (id: %s)\n", selectedCameraId);
-		return status;
+        LOGE("failed to open camera device (id: %s)\n", selectedCameraId);
+        return status;
     }
 
     status = ACameraDevice_createCaptureRequest(cameraDevice, TEMPLATE_STILL_CAPTURE, &captureRequest);
     if(status != ACAMERA_OK) {
-		LOGE("failed to create snapshot capture request (id: %s)\n", selectedCameraId);
-		return status;
+        LOGE("failed to create snapshot capture request (id: %s)\n", selectedCameraId);
+        return status;
     }
 
     status = ACaptureSessionOutputContainer_create(&captureSessionOutputContainer);
     if(status != ACAMERA_OK) {
-		LOGE("failed to create session output container (id: %s)\n", selectedCameraId);
-		return status;
+        LOGE("failed to create session output container (id: %s)\n", selectedCameraId);
+        return status;
     }
 
     media_status_t mstatus = AImageReader_new(width, height, AIMAGE_FORMAT_YUV_420_888, 2, &imageReader);
     if(mstatus != AMEDIA_OK) {
-		LOGE("failed to create image reader (reason: %d).\n", mstatus);
-		return mstatus;
+        LOGE("failed to create image reader (reason: %d).\n", mstatus);
+        return mstatus;
     }
 
     mstatus = AImageReader_setImageListener(imageReader, &imageListener);
     if(mstatus != AMEDIA_OK) {
-		LOGE("failed to set image listener (reason: %d).\n", mstatus);
-		return mstatus;
+        LOGE("failed to set image listener (reason: %d).\n", mstatus);
+        return mstatus;
     }
 
-	AImageReader_getWindow(imageReader, &nativeWindow);
+	  AImageReader_getWindow(imageReader, &nativeWindow);
     ANativeWindow_acquire(nativeWindow);
 
     ACameraOutputTarget_create(nativeWindow, &cameraOutputTarget);
     ACaptureRequest_addTarget(captureRequest, cameraOutputTarget);
 
     ACaptureSessionOutput_create(nativeWindow, &captureSessionOutput);
-	ACaptureSessionOutputContainer_add(captureSessionOutputContainer, captureSessionOutput);
+	  ACaptureSessionOutputContainer_add(captureSessionOutputContainer, captureSessionOutput);
 
     status = ACameraDevice_createCaptureSession(cameraDevice, captureSessionOutputContainer, &captureSessionStateCallbacks, &cameraCaptureSession);
     if(status != ACAMERA_OK) {
-		LOGE("failed to create capture session (reason: %d).\n", status);
-		return status;
+        LOGE("failed to create capture session (reason: %d).\n", status);
+        return status;
     }
 
     ACameraManager_deleteCameraIdList(cameraIdList);
@@ -157,7 +146,7 @@ int captureCamera() {
     LOGI("capture camera.\n");
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
     if(status != ACAMERA_OK) {
-		LOGE("failed to capture image (reason: %d).\n", status);
+        LOGE("failed to capture image (reason: %d).\n", status);
     }
 
     return status;
@@ -178,13 +167,11 @@ int closeCamera() {
 
     if(cameraDevice != NULL) {
         status = ACameraDevice_close(cameraDevice);
-
-		if(status != ACAMERA_OK) {
-			LOGE("failed to close camera device.\n");
-			return status;
-		}
-
-		cameraDevice = NULL;
+        if(status != ACAMERA_OK) {
+            LOGE("failed to close camera device.\n");
+            return status;
+        }
+        cameraDevice = NULL;
     }
 
     if(captureSessionOutput != NULL) {
@@ -198,14 +185,16 @@ int closeCamera() {
     }
 
     if(imageReader != NULL) {
-		AImageReader_delete(imageReader);
-		imageReader = NULL;
+        AImageReader_delete(imageReader);
+        imageReader = NULL;
     }
 
-    if(image != NULL) {
-		AImage_delete(image);
-		image = NULL;
-	}
+    if (globalImage.image != NULL) {
+        pthread_mutex_lock(&globalImage.mutex);
+        AImage_delete(globalImage.image);
+        globalImage.image = NULL;
+        pthread_mutex_unlock(&globalImage.mutex);
+    }
 
     LOGI("camera closed.\n");
     return ACAMERA_OK;
