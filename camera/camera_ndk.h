@@ -24,8 +24,8 @@ typedef struct {
 
 typedef enum {
     CAMERA_CLOSED,
-    CAMERA_READY,
-    CAMERA_ACTIVE
+    CAMERA_ACTIVE,
+    CAMERA_READY
 } CameraStatus;
 
 typedef struct {
