@@ -154,16 +154,16 @@ int openCamera(int index, int width, int height) {
 
 int captureCamera() {
     pthread_mutex_lock(&cameraState.mutex);
-    do {
-        if (cameraState.status == CAMERA_ACTIVE) {
-            LOGW("camera is already active.\n");
-            break;
-        }
-        if (cameraState.status == CAMERA_CLOSED) {
-            LOGW("camera is already closed.\n");
-            break;
-        }
-    } while (0);
+    if (cameraState.status == CAMERA_ACTIVE) {
+        LOGW("camera is already active.\n");
+        pthread_mutex_unlock(&cameraState.mutex);
+        return ACAMERA_OK;
+    }
+    if (cameraState.status == CAMERA_CLOSED) {
+        LOGW("camera is already closed.\n");
+        pthread_mutex_unlock(&cameraState.mutex);
+        return ACAMERA_ERROR_INVALID_OPERATION;
+    }
     pthread_mutex_unlock(&cameraState.mutex);
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
     if(status != ACAMERA_OK) {
