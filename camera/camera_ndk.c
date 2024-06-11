@@ -156,16 +156,20 @@ int openCamera(int index, int width, int height) {
 }
 
 int captureCamera() {
+    pthread_mutex_lock(&cameraState.mutex);
     if (cameraState.active) {
         LOGW("camera is already active.\n");
+        pthread_mutex_unlock(&cameraState.mutex);
         return ACAMERA_OK;
     }
     if (cameraState.closed) {
         LOGW("camera is already closed.\n");
+        pthread_mutex_unlock(&cameraState.mutex);
         return ACAMERA_ERROR_INVALID_OPERATION;
     }
     cameraState.active = false;
     cameraState.ready = false;
+    pthread_mutex_unlock(&cameraState.mutex);
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
     if(status != ACAMERA_OK) {
         LOGE("failed to capture image (reason: %d).\n", status);
