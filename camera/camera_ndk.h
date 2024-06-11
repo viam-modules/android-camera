@@ -22,10 +22,14 @@ typedef struct {
     pthread_mutex_t mutex;
 } GlobalImage;
 
+typedef enum {
+    CAMERA_CLOSED,
+    CAMERA_READY,
+    CAMERA_ACTIVE
+} CameraStatus;
+
 typedef struct {
-    bool active;
-    bool ready;
-    bool closed;
+    CameraStatus status;
     pthread_mutex_t mutex;
 } CameraState;
 
