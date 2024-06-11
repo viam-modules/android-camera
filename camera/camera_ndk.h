@@ -22,7 +22,15 @@ typedef struct {
     pthread_mutex_t mutex;
 } GlobalImage;
 
+typedef struct {
+    bool cameraActive;
+    bool cameraReady;
+    bool cameraClosed;
+    pthread_mutex_t mutex;
+} CameraState;
+
 extern GlobalImage globalImage;
+extern CameraState cameraState;
 
 extern AImage *image;
 extern AImageReader *imageReader;
