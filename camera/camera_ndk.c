@@ -164,8 +164,6 @@ int captureCamera() {
         LOGW("camera is already closed.\n");
         return ACAMERA_ERROR_INVALID_OPERATION;
     }
-    LOGI("capture camera.\n");
-    // set cameraState to false
     cameraState.cameraActive = false;
     cameraState.cameraReady = false;
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
