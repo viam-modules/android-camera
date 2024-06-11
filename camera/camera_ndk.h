@@ -23,9 +23,9 @@ typedef struct {
 } GlobalImage;
 
 typedef struct {
-    bool cameraActive;
-    bool cameraReady;
-    bool cameraClosed;
+    bool active;
+    bool ready;
+    bool closed;
     pthread_mutex_t mutex;
 } CameraState;
 

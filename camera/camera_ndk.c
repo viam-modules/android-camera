@@ -29,25 +29,25 @@ ACameraDevice_stateCallbacks deviceStateCallbacks = {
 void session_on_ready(void *context, ACameraCaptureSession *session) {
     LOGI("session is ready. %p\n", session);
     pthread_mutex_lock(&cameraState.mutex);
-    cameraState.cameraReady = true;
-    cameraState.cameraActive = false;
+    cameraState.ready = true;
+    cameraState.active = false;
     pthread_mutex_unlock(&cameraState.mutex);
 }
 
 void session_on_active(void *context, ACameraCaptureSession *session) {
     LOGI("session is activated. %p\n", session);
     pthread_mutex_lock(&cameraState.mutex);
-    cameraState.cameraActive = true;
-    cameraState.cameraReady = false;
+    cameraState.active = true;
+    cameraState.ready = false;
     pthread_mutex_unlock(&cameraState.mutex);
 }
 
 void session_on_closed(void *context, ACameraCaptureSession *session) {
     LOGI("session is closed. %p\n", session);
     pthread_mutex_lock(&cameraState.mutex);
-    cameraState.cameraClosed = true;
-    cameraState.cameraActive = false;
-    cameraState.cameraReady = false;
+    cameraState.closed = true;
+    cameraState.active = false;
+    cameraState.ready = false;
     pthread_mutex_unlock(&cameraState.mutex);
 }
 
@@ -156,16 +156,16 @@ int openCamera(int index, int width, int height) {
 }
 
 int captureCamera() {
-    if (cameraState.cameraActive) {
+    if (cameraState.active) {
         LOGW("camera is already active.\n");
         return ACAMERA_OK;
     }
-    if (cameraState.cameraClosed) {
+    if (cameraState.closed) {
         LOGW("camera is already closed.\n");
         return ACAMERA_ERROR_INVALID_OPERATION;
     }
-    cameraState.cameraActive = false;
-    cameraState.cameraReady = false;
+    cameraState.active = false;
+    cameraState.ready = false;
     camera_status_t status = ACameraCaptureSession_capture(cameraCaptureSession, NULL, 1, &captureRequest, NULL);
     if(status != ACAMERA_OK) {
         LOGE("failed to capture image (reason: %d).\n", status);
