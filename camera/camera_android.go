@@ -5,9 +5,11 @@ package androidcamera
 // #include "camera_ndk.h"
 import "C"
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"unsafe"
 
 	"go.viam.com/rdk/components/camera"
@@ -80,23 +82,18 @@ func (c *DroidCamera) NextImage() (img image.Image, err error) {
 		return nil, err
 	}
 
-	var yStride C.int
-	var yLen, cbLen, crLen C.int
-	var yPtr, cbPtr, crPtr *C.uint8_t
+	var jpegLen C.int
+	var jpegPtr *C.uint8_t
 
-	C.AImage_getPlaneRowStride(C.globalImage.image, 0, &yStride)
-	C.AImage_getPlaneData(C.globalImage.image, 0, &yPtr, &yLen)
-	C.AImage_getPlaneData(C.globalImage.image, 1, &cbPtr, &cbLen)
-	C.AImage_getPlaneData(C.globalImage.image, 2, &crPtr, &crLen)
+	C.AImage_getPlaneData(C.globalImage.image, 0, &jpegPtr, &jpegLen)
+	jpegData := C.GoBytes(unsafe.Pointer(jpegPtr), jpegLen)
 
-	c.img.YStride = int(yStride)
-	c.img.CStride = int(yStride) / 2
+	img, err = jpeg.Decode(bytes.NewReader(jpegData))
+	if err != nil {
+		return nil, fmt.Errorf("camera: failed to decode JPEG: %v", err)
+	}
 
-	c.img.Y = C.GoBytes(unsafe.Pointer(yPtr), yLen)
-	c.img.Cb = C.GoBytes(unsafe.Pointer(cbPtr), cbLen)
-	c.img.Cr = C.GoBytes(unsafe.Pointer(crPtr), crLen)
-
-	img = rotateImage(c.img, c.opts.Rotate)
+	img = rotateImage(img, c.opts.Rotate)
 
 	return img, nil
 }

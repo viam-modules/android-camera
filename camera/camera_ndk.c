@@ -109,7 +109,7 @@ int openCamera(int index, int width, int height) {
         return status;
     }
 
-    media_status_t mstatus = AImageReader_new(width, height, AIMAGE_FORMAT_YUV_420_888, 2, &imageReader);
+    media_status_t mstatus = AImageReader_new(width, height, AIMAGE_FORMAT_JPEG, 2, &imageReader);
     if(mstatus != AMEDIA_OK) {
         LOGE("failed to create image reader (reason: %d).\n", mstatus);
         return mstatus;
