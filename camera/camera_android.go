@@ -85,6 +85,10 @@ func (c *DroidCamera) NextImage() (img image.Image, err error) {
 	var jpegPtr *C.uint8_t
 
 	C.AImage_getPlaneData(C.globalImage.image, 0, &jpegPtr, &jpegLen)
+	if jpegPtr == nil {
+		err = fmt.Errorf("camera: failed to get JPEG data")
+		return nil, err
+	}
 	jpegData := C.GoBytes(unsafe.Pointer(jpegPtr), jpegLen)
 
 	img, err = jpeg.Decode(bytes.NewReader(jpegData))
