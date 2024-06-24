@@ -58,7 +58,6 @@ type Options struct {
 
 type DroidCamera struct {
 	opts       Options
-	img        *image.YCbCr
 	logger     logging.Logger
 	cancelCtx  context.Context
 	cancelFunc context.CancelFunc
@@ -141,7 +140,6 @@ func New(ctx context.Context, name resource.Name, conf *Config, logger logging.L
 			Timestamp: conf.Timestamp,
 		},
 		logger: logger,
-		img:    image.NewYCbCr(image.Rect(0, 0, int(conf.Width), int(conf.Height)), image.YCbCrSubsampleRatio420),
 	}
 
 	ret := C.openCamera(C.int(conf.Index), C.int(conf.Width), C.int(conf.Height))
