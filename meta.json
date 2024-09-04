@@ -1,7 +1,7 @@
 {
   "module_id": "viam:droid-cam",
   "visibility": "public",
-  "url": "https://github.com/viam-labs/android-camera",
+  "url": "https://github.com/viam-modules/android-camera",
   "description": "Module for Android cameras",
   "models": [
     {
