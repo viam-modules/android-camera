@@ -170,7 +170,7 @@ func New(ctx context.Context, name resource.Name, conf *Config, logger logging.L
 		return nil, err
 	}
 
-	return camera.FromVideoSource(name, src, logger), nil
+	return camera.FromVideoSource(name, src), nil
 }
 
 // rotateImage rotates the image by 0, 90, 180, or 270 degrees clockwise.
